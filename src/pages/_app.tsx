@@ -13,6 +13,7 @@ import api from "@utils/lib/api";
 import { Error } from "@utils/lib/messages";
 import * as rdd from "react-device-detect";
 import { useRouter } from "next/router";
+import "react-datepicker/dist/react-datepicker.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isSSR, setIsSSR] = useState<boolean>(true);

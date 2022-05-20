@@ -18,6 +18,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Post, Progress } from "@components/index";
+import DatePicker from "react-datepicker";
 
 import Link from "next/link";
 import withAuth from "@utils/hooks/withAuth";
@@ -56,7 +57,7 @@ function createData(
 export interface IAddTaskDataProps {
   name: string;
   description: string;
-  deadline: string;
+  deadline: Date;
   assignTo: string;
 }
 const SingleGroup = () => {
@@ -92,10 +93,10 @@ const SingleGroup = () => {
   const handleCloseAddTask = () => setOpenAddTask(false);
   //
 
-  const [addTaskData, setAddTaskData] = useState<IAddTaskDataProps>({
+  const [addTaskData, setAddTaskData] = useState<any>({
     name: "",
     description: "",
-    deadline: "",
+    deadline: new Date(),
     assignTo: "",
   });
   const [allTaskLeader, setAllTaskLeader] = useState([]);
@@ -267,6 +268,9 @@ const SingleGroup = () => {
     };
   });
   const router = useRouter();
+  const [isRemove, setIsRemove] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+
   return (
     <Box flex={4} p={2} pb={10} display={"flex"} flexDirection={"column"}>
       {isLoading && taskIsLoading && postIsLoading ? (
@@ -305,12 +309,17 @@ const SingleGroup = () => {
                 onChange={onChange}
                 name="description"
               />
-              <Input
-                type="date"
-                id="date"
-                required
-                onChange={onChange}
-                name="deadline"
+              <DatePicker
+                selected={startDate}
+                value={addTaskData.deadline}
+                minDate={new Date()}
+                onChange={(date: any) => {
+                  setStartDate(date);
+                  setAddTaskData({
+                    ...addTaskData,
+                    deadline: moment(new Date(date)).format("MM-DD-YYYY"),
+                  });
+                }}
               />
               <Autocomplete
                 onChange={(event, value: any) => {

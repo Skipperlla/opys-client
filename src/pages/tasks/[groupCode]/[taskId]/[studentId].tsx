@@ -14,8 +14,10 @@ import {
   Paper,
   CircularProgress,
 } from "@mui/material";
+import DatePicker from "react-datepicker";
 
-import withAuth from "../../../../utils/hooks/withAuth";
+import "react-datepicker/dist/react-datepicker.css";
+import withAuth from "@utils/hooks/withAuth";
 import {
   StyledDropzone,
   MuiAccordion,
@@ -244,14 +246,14 @@ const SingleTaskPage = () => {
   const [editGroup, setEditGroup] = useState<any>({
     name: "",
     description: "",
-    deadline: "",
+    deadline: new Date(),
   });
   useEffect(() => {
     if (Object.getOwnPropertyNames(Task)?.length) {
       setEditGroup({
         name: Task?.name,
         description: Task?.description,
-        // deadline: Task?.deadline,
+        deadline: new Date(Task?.deadline),
       });
     }
   }, [Task]);
@@ -273,6 +275,8 @@ const SingleTaskPage = () => {
   };
   const [isEditDisabled, setIsEditDisabled] = useState(false);
   const [isRemove, setIsRemove] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+
   return (
     <Box flex={4} p={2}>
       {groupIsLoading &&
@@ -425,7 +429,7 @@ const SingleTaskPage = () => {
                 setIsEditDisabled(true);
                 setIsRemove(true);
                 try {
-                  const { data } = await api.put(
+                  const { data } = await api.post(
                     `/Task/Teacher/Update/${groupCode}/${taskId}`,
                     editGroup
                   );
@@ -455,14 +459,25 @@ const SingleTaskPage = () => {
                 onChange={onChangeEditGroup}
                 name="description"
               />
-              <Input
+              {/* <Input
                 type="date"
                 id="date"
                 required
                 onChange={onChangeEditGroup}
                 name="deadline"
+              /> */}
+              <DatePicker
+                selected={startDate}
+                value={editGroup.deadline}
+                minDate={new Date()}
+                onChange={(date: any) => {
+                  setStartDate(date);
+                  setEditGroup({
+                    ...editGroup,
+                    deadline: moment(new Date(date)).format("MM-DD-YYYY"),
+                  });
+                }}
               />
-
               <Button
                 sx={{ mt: 2 }}
                 variant="outlined"
