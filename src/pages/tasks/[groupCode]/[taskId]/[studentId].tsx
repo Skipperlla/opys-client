@@ -241,21 +241,20 @@ const SingleTaskPage = () => {
       item.assignTo._id
     );
   });
-  const [editGroup, setEditGroup] = useState({
+  const [editGroup, setEditGroup] = useState<any>({
     name: "",
     description: "",
     deadline: "",
   });
   useEffect(() => {
-    if (Object.getOwnPropertyNames(Group)?.length) {
+    if (Object.getOwnPropertyNames(Task)?.length) {
       setEditGroup({
-        name: Group?.name,
-        description: Group?.description,
-        deadline: Group?.deadline,
+        name: Task?.name,
+        description: Task?.description,
+        // deadline: Task?.deadline,
       });
     }
-  }, [Group]);
-  console.log(Group?.description);
+  }, [Task]);
   const isCompleted = Object.getOwnPropertyNames(Task)?.length
     ? false
     : true || Task.status === status.Completed;
@@ -273,6 +272,7 @@ const SingleTaskPage = () => {
     }
   };
   const [isEditDisabled, setIsEditDisabled] = useState(false);
+  const [isRemove, setIsRemove] = useState(false);
   return (
     <Box flex={4} p={2}>
       {groupIsLoading &&
@@ -421,6 +421,7 @@ const SingleTaskPage = () => {
               method="post"
               onSubmit={async () => {
                 setIsEditDisabled(true);
+                setIsRemove(true);
                 try {
                   const { data } = await api.put(
                     `/Task/Teacher/Update/${groupCode}/${taskId}`,
@@ -431,6 +432,7 @@ const SingleTaskPage = () => {
                 } catch (e: any) {
                   Error(e.response.data.message);
                   setIsEditDisabled(false);
+                  setIsRemove(true);
                 }
               }}
             >
@@ -471,7 +473,9 @@ const SingleTaskPage = () => {
                 sx={{ mt: 2 }}
                 variant="outlined"
                 color="error"
+                disabled={isRemove}
                 onClick={async () => {
+                  setIsRemove(true);
                   setIsEditDisabled(true);
                   try {
                     const { data } = await api.delete(
@@ -483,6 +487,7 @@ const SingleTaskPage = () => {
                   } catch (e: any) {
                     console.log(e.response);
                     Error(e.response.data.message);
+                    setIsRemove(false);
                     setIsEditDisabled(false);
                   }
                 }}
