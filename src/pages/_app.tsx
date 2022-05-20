@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   };
   const router = useRouter();
   useEffect(() => {
-    if (Cookies.get("token")) {
+    if (Cookies.get("token") && router.isReady) {
       dispatch(UserAction.isLoggedIn());
       if (!rdd.isMobile) {
         if (Notification?.permission === "granted") {

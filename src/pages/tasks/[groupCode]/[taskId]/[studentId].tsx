@@ -36,8 +36,9 @@ import {
 import { StudentGroupAction, TeacherGroupAction } from "@store/actions/group";
 import { useRouter } from "next/router";
 import { QuestionAction } from "@store/actions";
-import { IUserProps } from "types/task";
+import { ITask, IUserProps } from "types/task";
 import Link from "next/link";
+import { getAllTaskLeader } from "@utils/lib/api";
 // Modal style
 const style = {
   display: "flex",
@@ -101,6 +102,8 @@ const SingleTaskPage = () => {
       return state.question;
     }
   );
+  const [allTaskLeader, setAllTaskLeader] = useState([]);
+
   useEffect(() => {
     if (Object.getOwnPropertyNames(User)?.length && router.isReady) {
       dispatch(QuestionAction.allQuestionsTask(groupCode, taskId));
@@ -108,11 +111,15 @@ const SingleTaskPage = () => {
         dispatch(StudentGroupAction.singleGroup(groupCode));
         dispatch(StudentTaskAction.singleTask(groupCode, taskId));
         dispatch(StudentSubTaskAction.allSubTasks());
+        if (Group?.leaders?.includes(User?._id)) {
+          getAllTaskLeader(groupCode).then((data: any) => {
+            setAllTaskLeader(data.data);
+          });
+        }
       } else {
         dispatch(TeacherGroupAction.singleGroup(groupCode));
         dispatch(TeacherTaskAction.singleTask(groupCode, taskId, studentId));
-        dispatch(TeacherSubTaskAction.allSubTasks());
-        dispatch(TeacherSubTaskAction.allSubTasks());
+        dispatch(TeacherSubTaskAction.allSubTasks(groupCode, taskId));
       }
     }
   }, [User, router]);
@@ -197,6 +204,18 @@ const SingleTaskPage = () => {
   });
   const filterSubTask = SubTasks?.filter((item) => {
     return item.status === status.Completed;
+  });
+  const allTaskLeaderRows = allTaskLeader?.map((item: ITask) => {
+    return createData(
+      item.name,
+      item.description,
+      moment(item.deadline).format("L"),
+
+      `${item.assignTo.name} ${item.assignTo.surname}`,
+      item.status,
+      item._id,
+      item.assignTo._id
+    );
   });
   return (
     <Box flex={4} p={2}>
@@ -468,6 +487,58 @@ const SingleTaskPage = () => {
               <div>Henüz göreviniz bulunmamaktadır.</div>
             )}
           </Box>
+          {Group?.leaders?.includes(User?._id) && (
+            <Box mt={2}>
+              <Typography variant="h6" mb={1}>
+                Atanan Ödevler
+              </Typography>
+              {allTaskLeader?.length ? (
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Görev Adı</TableCell>
+                        <TableCell>Açıklama</TableCell>
+                        <TableCell>Bitiş Tarihi</TableCell>
+                        <TableCell>Atanan Kişi</TableCell>
+                        <TableCell>Durum</TableCell>
+                        <TableCell align="right"></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {allTaskLeaderRows.map((row, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{
+                            "&:last-child td, &:last-child th": {
+                              border: 0,
+                            },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {row.name}
+                          </TableCell>
+                          <TableCell>{row.description}</TableCell>
+                          <TableCell>{row.deadline}</TableCell>
+                          <TableCell>{row.fullName}</TableCell>
+                          <TableCell>{row.taskStatus}</TableCell>
+                          <TableCell align="right">
+                            {/* <Link
+                              href={`/tasks/${groupCode}/${row.taskId}/${row.assignTo}`}
+                            >
+                              Göreve git
+                            </Link> */}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <div>Henüz göreviniz bulunmamaktadır.</div>
+              )}
+            </Box>
+          )}
           <Box>
             <Typography variant="h6" my={2}>
               {User?.role === roles.Student ? "Sorular" : "Sorular"}

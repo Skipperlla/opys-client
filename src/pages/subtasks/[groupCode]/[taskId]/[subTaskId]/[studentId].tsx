@@ -142,8 +142,9 @@ const SingleSubTaskPage = () => {
                       dispatch(
                         StudentSubTaskAction.endSubTask(
                           groupCode,
+                          taskId,
                           subTaskId,
-                          subTaskId
+                          router
                         )
                       );
                     }}

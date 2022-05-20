@@ -35,27 +35,32 @@ const singleSubTask =
       dispatch({ type: SetupType.GET_SUB_TASK_RESET });
     }
   };
-const allSubTasks = () => async (dispatch: SubTaskDispatch) => {
-  dispatch({ type: SetupType.GET_SUB_TASKS_START });
-  try {
-    const { data, status } = await api.get<{
-      data: ISubTask[];
-      message: string;
-    }>(`${baseURL}/SubTasks`);
-    dispatch({
-      type: SetupType.GET_SUB_TASKS_SUCCESS,
-      payload: data.data,
-      status,
-    });
-    Success(data.message);
-    dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
-  } catch (e: any) {
-    const { status, data } = e.response;
+const allSubTasks =
+  (
+    groupCode: string | string[] | undefined,
+    taskId: string | string[] | undefined
+  ) =>
+  async (dispatch: SubTaskDispatch) => {
+    dispatch({ type: SetupType.GET_SUB_TASKS_START });
+    try {
+      const { data, status } = await api.get<{
+        data: ISubTask[];
+        message: string;
+      }>(`${baseURL}/SubTasks/${groupCode}/${taskId}`);
+      dispatch({
+        type: SetupType.GET_SUB_TASKS_SUCCESS,
+        payload: data.data,
+        status,
+      });
+      Success(data.message);
+      dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
+    } catch (e: any) {
+      const { status, data } = e.response;
 
-    Error(data.message);
-    dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
-  }
-};
+      Error(data.message);
+      dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
+    }
+  };
 const updateSubTask =
   (
     groupCode: string | string[] | undefined,

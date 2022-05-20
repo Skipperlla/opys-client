@@ -1,9 +1,8 @@
 import React, { FC, ReactNode, useEffect, useState } from "react";
 import { Box, CircularProgress, Stack } from "@mui/material";
-import Navbar from "@components/Navbar";
+import { Navbar, MuiBottomNavigation, Sidebar } from "@components/index";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import { Sidebar } from "@components/index";
 
 const Main: FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,7 +18,7 @@ const Main: FC<{ children: ReactNode }> = ({ children }) => {
           <Navbar />
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Sidebar />
-            {/* <MuiBottomNavigation /> */}
+            <MuiBottomNavigation />
             {children}
           </Stack>
         </Box>

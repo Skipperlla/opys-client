@@ -1,7 +1,7 @@
 import { SetupType } from "@store/types";
 import Cookies from "js-cookie";
 import api from "@utils/lib/api";
-import { Error } from "@utils/lib/messages";
+import { Error, Success } from "@utils/lib/messages";
 import { AuthDispatch } from "types/auth";
 import { ISignInProps } from "pages/auth/signin";
 import { NextRouter } from "next/router";
@@ -13,10 +13,19 @@ const Login =
     try {
       const { data } = await api.post("/Auth/Login", form);
       Cookies.set("token", data.access_token);
-      router.push("/");
-    } catch (e:any) {
+      window.location.replace("/");
+    } catch (e: any) {
       const { status, data } = e.response;
       Error(data.message);
     }
   };
-export default { Login };
+const forgotPassword = (email: any) => async (dispatch: AuthDispatch) => {
+  try {
+    const { data } = await api.post("/Auth/forgotPassword", { email });
+    Success(data.message);
+  } catch (e: any) {
+    const { status, data } = e.response;
+    Error(data.message);
+  }
+};
+export default { Login, forgotPassword };

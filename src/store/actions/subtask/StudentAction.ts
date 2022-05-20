@@ -2,7 +2,7 @@ import api from "@utils/lib/api";
 import { ISubTask, SubTaskDispatch } from "types/subtask";
 import { SetupType } from "@store/types";
 import { Success, Error, Warning } from "@utils/lib/messages";
-import { NextRouter } from "next/router";
+import { NextRouter, Router } from "next/router";
 const baseURL = "/SubTask/Student";
 
 const singleSubTask =
@@ -96,7 +96,8 @@ const endSubTask =
   (
     groupCode: string | string[] | undefined,
     taskId: string | string[] | undefined,
-    subTaskId: string | string[] | undefined
+    subTaskId: string | string[] | undefined,
+    router: NextRouter
   ) =>
   async (dispatch: SubTaskDispatch) => {
     dispatch({ type: SetupType.END_SUB_TASK_START });
@@ -110,6 +111,8 @@ const endSubTask =
         payload: data.data,
         status,
       });
+      Success(data.message);
+      router.back();
       dispatch({ type: SetupType.END_SUB_TASK_RESET });
     } catch (e: any) {
       const { data } = e.response;

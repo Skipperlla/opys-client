@@ -7,3 +7,4 @@ export { default as StyledDropzone } from "./StyledDropzone";
 export { default as MuiAccordion } from "./MuiAccordion";
 export { default as FileList } from "./FileList";
 export { default as Progress } from "./Progress";
+export { default as MuiBottomNavigation } from "./MuiBottomNavigation";

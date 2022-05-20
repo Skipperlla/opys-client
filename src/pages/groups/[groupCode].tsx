@@ -106,9 +106,11 @@ const SingleGroup = () => {
       if (User?.role === roles.Student) {
         dispatch(StudentTaskAction.allTasks());
         dispatch(StudentGroupAction.singleGroup(groupCode));
-        getAllTaskLeader(groupCode).then((data: any) => {
-          setAllTaskLeader(data.data);
-        });
+        if (Group?.leaders?.includes(User?._id)) {
+          getAllTaskLeader(groupCode).then((data: any) => {
+            setAllTaskLeader(data.data);
+          });
+        }
       } else {
         dispatch(TeacherTaskAction.allTasks());
         dispatch(TeacherGroupAction.singleGroup(groupCode));
