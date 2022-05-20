@@ -10,7 +10,8 @@ const singleTask =
   (
     groupCode: string | string[] | undefined,
     taskId: string | string[] | undefined,
-    studentId: string | string[] | undefined
+    studentId: string | string[] | undefined,
+    router: NextRouter
   ) =>
   async (dispatch: TaskDispatch) => {
     dispatch({ type: SetupType.GET_TASK_START });
@@ -27,8 +28,8 @@ const singleTask =
       dispatch({ type: SetupType.GET_TASK_RESET });
     } catch (e: any) {
       const { status, data } = e.response;
-
       Warning(data.message);
+      if (status === 404) router.replace("/tasks");
       dispatch({ type: SetupType.GET_TASK_RESET });
     }
   };

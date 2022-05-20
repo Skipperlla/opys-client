@@ -6,8 +6,10 @@ export interface IGroup {
   createdAt: Date;
   groupName: string;
   groupCode: string;
-  leaders: string[];
+  description: string;
+  deadline: string;
   name: string;
+  leaders: string[];
   owner: string;
   students: IUserProps[];
   updatedAt: Date;

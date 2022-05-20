@@ -9,7 +9,8 @@ const singleSubTask =
   (
     groupCode: string | string[] | undefined,
     taskId: string | string[] | undefined,
-    subTaskId: string | string[] | undefined
+    subTaskId: string | string[] | undefined,
+    router: NextRouter
   ) =>
   async (dispatch: SubTaskDispatch) => {
     dispatch({ type: SetupType.GET_SUB_TASK_START });
@@ -25,9 +26,9 @@ const singleSubTask =
       });
       dispatch({ type: SetupType.GET_SUB_TASK_RESET });
     } catch (e: any) {
-      const { data } = e.response;
-
+      const { status, data } = e.response;
       Warning(data.message);
+      if (status === 404) router.replace("/tasks");
       dispatch({ type: SetupType.GET_SUB_TASK_RESET });
     }
   };

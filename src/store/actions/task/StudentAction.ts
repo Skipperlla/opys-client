@@ -1,14 +1,15 @@
 import api from "@utils/lib/api";
 import { ITask, TaskDispatch } from "types/task";
 import { SetupType } from "@store/types";
-import { Success, Error } from "@utils/lib/messages";
+import { Success, Error, Warning } from "@utils/lib/messages";
 import { NextRouter } from "next/router";
 const baseURL = "/Task/Student";
 
 const singleTask =
   (
     groupCode: string | string[] | undefined,
-    taskId: string | string[] | undefined
+    taskId: string | string[] | undefined,
+    router: NextRouter
   ) =>
   async (dispatch: TaskDispatch) => {
     dispatch({ type: SetupType.GET_TASK_START });
@@ -25,7 +26,8 @@ const singleTask =
     } catch (e: any) {
       const { status, data } = e.response;
 
-      Error(data.message);
+      Warning(data.message);
+      if (status === 404) router.replace("/tasks");
       dispatch({ type: SetupType.GET_TASK_RESET });
     }
   };

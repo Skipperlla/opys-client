@@ -112,15 +112,14 @@ const SingleGroup = () => {
     if (Object.getOwnPropertyNames(User)?.length) {
       dispatch(PostAction.allPosts(groupCode));
       if (User?.role === roles.Student) {
-        dispatch(StudentGroupAction.singleGroup(groupCode));
+        dispatch(StudentGroupAction.singleGroup(groupCode, router));
         dispatch(StudentTaskAction.allTasks());
       } else {
         dispatch(TeacherTaskAction.allTasks());
-        dispatch(TeacherGroupAction.singleGroup(groupCode));
+        dispatch(TeacherGroupAction.singleGroup(groupCode, router));
       }
     }
   }, [User]);
-  console.log(allTaskLeader);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "deadline") {
       setAddTaskData({
@@ -412,7 +411,6 @@ const SingleGroup = () => {
                             Göreve git
                           </Link>
                         </TableCell>
-                        <TableCell align="right">Görevi Sil</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

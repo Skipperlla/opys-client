@@ -46,7 +46,7 @@ interface IAcceptedFilesProps {
   path: string;
 }
 
-function StyledDropzone() {
+function StyledDropzone({ isComplete }: { isComplete: boolean }) {
   const {
     getRootProps,
     getInputProps,
@@ -54,7 +54,7 @@ function StyledDropzone() {
     isFocused,
     isDragAccept,
     isDragReject,
-  } = useDropzone({});
+  } = useDropzone({ disabled: isComplete });
   const router = useRouter();
   const { groupCode, taskId, studentId, subTaskId } = router?.query;
   const style: any = useMemo(
@@ -140,8 +140,8 @@ function StyledDropzone() {
 
   return (
     <Box display={"flex"} flexDirection="column">
-      <div {...getRootProps({ style })}>
-        <input {...getInputProps()} onChange={() => {}} />
+      <div {...getRootProps({ style, className: "dropzone disabled" })}>
+        <input {...getInputProps()} disabled={false} />
         <p>
           Yüklemek istediğiniz dosya/dosyaları sürükleyin ya da seçmek için
           tıklayın.
@@ -149,11 +149,12 @@ function StyledDropzone() {
       </div>
       <Box my={1}>
         <h4>Eklenen Dosyalar</h4>
-        <ul>{AcceptedFiles?.length ? files : null}</ul>
+        <ul>{files}</ul>
       </Box>
       <Button
         sx={{ mt: 1 }}
         variant="contained"
+        disabled={isComplete}
         onClick={() => {
           setAcceptedFiles(acceptedFiles);
         }}

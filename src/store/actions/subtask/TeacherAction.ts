@@ -1,6 +1,6 @@
 import { NextRouter } from "next/router";
 import api from "@utils/lib/api";
-import { Error, Success } from "@utils/lib/messages";
+import { Error, Success, Warning } from "@utils/lib/messages";
 import { ISubTask, SubTaskDispatch } from "types/subtask";
 import { SetupType } from "@store/types";
 import { IAddTaskDataProps } from "pages/groups/[groupCode]";
@@ -12,7 +12,8 @@ const singleSubTask =
     groupCode: string | string[] | undefined,
     taskId: string | string[] | undefined,
     subTaskId: string | string[] | undefined,
-    studentId: string | string[] | undefined
+    studentId: string | string[] | undefined,
+    router: NextRouter
   ) =>
   async (dispatch: SubTaskDispatch) => {
     dispatch({ type: SetupType.GET_SUB_TASK_START });
@@ -26,41 +27,36 @@ const singleSubTask =
         payload: data.data,
         status,
       });
-      Success(data.message);
+      Warning(data.message);
       dispatch({ type: SetupType.GET_SUB_TASK_RESET });
     } catch (e: any) {
       const { status, data } = e.response;
-
-      Error(data.message);
+      Warning(data.message);
+      if (status === 404) router.replace("/tasks");
       dispatch({ type: SetupType.GET_SUB_TASK_RESET });
     }
   };
-const allSubTasks =
-  (
-    groupCode: string | string[] | undefined,
-    taskId: string | string[] | undefined
-  ) =>
-  async (dispatch: SubTaskDispatch) => {
-    dispatch({ type: SetupType.GET_SUB_TASKS_START });
-    try {
-      const { data, status } = await api.get<{
-        data: ISubTask[];
-        message: string;
-      }>(`${baseURL}/SubTasks/${groupCode}/${taskId}`);
-      dispatch({
-        type: SetupType.GET_SUB_TASKS_SUCCESS,
-        payload: data.data,
-        status,
-      });
-      Success(data.message);
-      dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
-    } catch (e: any) {
-      const { status, data } = e.response;
+const allSubTasks = () => async (dispatch: SubTaskDispatch) => {
+  dispatch({ type: SetupType.GET_SUB_TASKS_START });
+  try {
+    const { data, status } = await api.get<{
+      data: ISubTask[];
+      message: string;
+    }>(`${baseURL}/SubTasks`);
+    dispatch({
+      type: SetupType.GET_SUB_TASKS_SUCCESS,
+      payload: data.data,
+      status,
+    });
+    Success(data.message);
+    dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
+  } catch (e: any) {
+    const { status, data } = e.response;
 
-      Error(data.message);
-      dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
-    }
-  };
+    Error(data.message);
+    dispatch({ type: SetupType.GET_SUB_TASKS_RESET });
+  }
+};
 const updateSubTask =
   (
     groupCode: string | string[] | undefined,

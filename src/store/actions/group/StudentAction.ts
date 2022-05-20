@@ -1,11 +1,12 @@
 import api from "@utils/lib/api";
 import { GroupDispatch, IGroup } from "types/group";
 import { SetupType } from "@store/types";
-import { Success, Error } from "@utils/lib/messages";
+import { Success, Error, Warning } from "@utils/lib/messages";
+import { NextRouter } from "next/router";
 const baseURL = "/Group/Student";
 
 const singleGroup =
-  (groupCode: string | string[] | undefined) =>
+  (groupCode: string | string[] | undefined, router: NextRouter) =>
   async (dispatch: GroupDispatch) => {
     dispatch({ type: SetupType.GET_GROUP_START });
     try {
@@ -21,7 +22,8 @@ const singleGroup =
     } catch (e: any) {
       const { status, data } = e.response;
 
-      Error(data.message);
+      Warning(data.message);
+      if (status === 404) router.replace("/tasks");
       dispatch({ type: SetupType.GET_GROUP_RESET });
     }
   };

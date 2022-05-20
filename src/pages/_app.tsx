@@ -25,14 +25,12 @@ function MyApp({ Component, pageProps }: AppProps) {
       await api.put("/User/Update/User", { subscribe });
     } catch (e: any) {
       const { status, data } = e.response;
-      console.log(e.response);
       Error(data.message);
     }
   };
   const router = useRouter();
   useEffect(() => {
     if (Cookies.get("token") && router.isReady) {
-      dispatch(UserAction.isLoggedIn());
       if (!rdd.isMobile) {
         if (Notification?.permission === "granted") {
           window.addEventListener("load", async () => {
@@ -49,7 +47,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         }
       }
     }
-  }, [router, Cookies]);
+  }, []);
+  useEffect(() => {
+    if (Cookies.get("token")) {
+      dispatch(UserAction.isLoggedIn());
+    }
+  }, []);
+
   return (
     <Provider store={store}>
       <Main>

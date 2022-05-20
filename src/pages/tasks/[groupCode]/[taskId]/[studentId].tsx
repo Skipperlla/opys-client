@@ -15,7 +15,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import withAuth from "@utils/hooks/withAuth";
+import withAuth from "../../../../utils/hooks/withAuth";
 import {
   StyledDropzone,
   MuiAccordion,
@@ -36,10 +36,32 @@ import {
 import { StudentGroupAction, TeacherGroupAction } from "@store/actions/group";
 import { useRouter } from "next/router";
 import { QuestionAction } from "@store/actions";
-import { ITask, IUserProps } from "types/task";
+import { ITask } from "types/task";
 import Link from "next/link";
 import api, { getAllTaskLeader } from "@utils/lib/api";
-import { Error, Success } from "@utils/lib/messages";
+
+import LinearProgress, {
+  LinearProgressProps,
+} from "@mui/material/LinearProgress";
+import { Success } from "@utils/lib/messages";
+
+function LinearProgressWithLabel(
+  props: LinearProgressProps & { value: number }
+) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box sx={{ width: "100%", mr: 1 }}>
+        <LinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">{`${Math.round(
+          props.value
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
 // Modal style
 const style = {
   display: "flex",
@@ -104,13 +126,12 @@ const SingleTaskPage = () => {
     }
   );
   const [allTaskLeader, setAllTaskLeader] = useState([]);
-
   useEffect(() => {
     if (Object.getOwnPropertyNames(User)?.length && router.isReady) {
       dispatch(QuestionAction.allQuestionsTask(groupCode, taskId));
       if (User?.role === roles.Student) {
-        dispatch(StudentGroupAction.singleGroup(groupCode));
-        dispatch(StudentTaskAction.singleTask(groupCode, taskId));
+        dispatch(StudentGroupAction.singleGroup(groupCode, router));
+        dispatch(StudentTaskAction.singleTask(groupCode, taskId, router));
         dispatch(StudentSubTaskAction.allSubTasks());
         if (Group?.leaders?.includes(User?._id)) {
           getAllTaskLeader(groupCode).then((data: any) => {
@@ -118,12 +139,14 @@ const SingleTaskPage = () => {
           });
         }
       } else {
-        dispatch(TeacherGroupAction.singleGroup(groupCode));
-        dispatch(TeacherTaskAction.singleTask(groupCode, taskId, studentId));
-        dispatch(TeacherSubTaskAction.allSubTasks(groupCode, taskId));
+        dispatch(TeacherGroupAction.singleGroup(groupCode, router));
+        dispatch(
+          TeacherTaskAction.singleTask(groupCode, taskId, studentId, router)
+        );
+        dispatch(TeacherSubTaskAction.allSubTasks());
       }
     }
-  }, [User, router]);
+  }, [User]);
   const [openAskTask, setOpenAskTask] = useState(false);
   const handleOpenAskTask = () => setOpenAskTask(true);
   const handleCloseAskTask = () => setOpenAskTask(false);
@@ -223,13 +246,33 @@ const SingleTaskPage = () => {
     description: "",
     deadline: "",
   });
-
+  useEffect(() => {
+    if (Object.getOwnPropertyNames(Group)?.length) {
+      setEditGroup({
+        name: Group?.name,
+        description: Group?.description,
+        deadline: Group?.deadline,
+      });
+    }
+  }, [Group]);
+  console.log(Group?.description);
+  const isCompleted = Object.getOwnPropertyNames(Task)?.length
+    ? false
+    : true || Task.status === status.Completed;
   const onChangeEditGroup = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditGroup({
-      ...editGroup,
-      [e.target.name]: e.target.value,
-    });
+    if (e.target.name === "deadline") {
+      setEditGroup({
+        ...editGroup,
+        [e.target.name]: moment(new Date(e.target.value)).format("MM-DD-YYYY"),
+      });
+    } else {
+      setEditGroup({
+        ...editGroup,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
+  const [isEditDisabled, setIsEditDisabled] = useState(false);
   return (
     <Box flex={4} p={2}>
       {groupIsLoading &&
@@ -239,6 +282,13 @@ const SingleTaskPage = () => {
         <Progress />
       ) : (
         <>
+          <Box sx={{ width: "100%" }}>
+            <LinearProgressWithLabel
+              value={Math.ceil(
+                (100 / SubTasks?.length) * filterSubTask?.length
+              )}
+            />
+          </Box>
           <Modal isOpen={openFinishTodo} onClose={handleCloseFinishTodo}>
             <Box sx={styleFinishTodo} gap={2}>
               <Typography id="modal-modal-title" component="h2">
@@ -368,22 +418,19 @@ const SingleTaskPage = () => {
               sx={style}
               gap={2}
               component="form"
-              onSubmit={async (e: any) => {
-                e.preventDefault();
+              method="post"
+              onSubmit={async () => {
+                setIsEditDisabled(true);
                 try {
                   const { data } = await api.put(
                     `/Task/Teacher/Update/${groupCode}/${taskId}`,
-                    {
-                      ...editGroup,
-                      deadline: moment(new Date(editGroup.deadline)).format(
-                        "MM-DD-YYYY"
-                      ),
-                    }
+                    editGroup
                   );
                   Success(data.message);
-                  router.reload();
-                } catch (err: any) {
-                  Error(err.response.data.message);
+                  handleCloseEditTask();
+                } catch (e: any) {
+                  Error(e.response.data.message);
+                  setIsEditDisabled(false);
                 }
               }}
             >
@@ -398,6 +445,7 @@ const SingleTaskPage = () => {
                 multiline
                 label="Açıklama"
                 value={editGroup.description}
+                defaultValue={editGroup?.description}
                 rows={6}
                 required
                 onChange={onChangeEditGroup}
@@ -407,13 +455,39 @@ const SingleTaskPage = () => {
                 type="date"
                 id="date"
                 required
-                value={editGroup.deadline}
                 onChange={onChangeEditGroup}
                 name="deadline"
               />
 
-              <Button sx={{ mt: 2 }} variant="outlined" type="submit">
+              <Button
+                sx={{ mt: 2 }}
+                variant="outlined"
+                type="submit"
+                disabled={isEditDisabled}
+              >
                 Güncelle
+              </Button>
+              <Button
+                sx={{ mt: 2 }}
+                variant="outlined"
+                color="error"
+                onClick={async () => {
+                  setIsEditDisabled(true);
+                  try {
+                    const { data } = await api.delete(
+                      `/Task/Teacher/Remove/${groupCode}/${taskId}/${studentId}`
+                    );
+                    Success(data.message);
+                    router.replace(`/groups/${groupCode}`);
+                    handleCloseEditTask();
+                  } catch (e: any) {
+                    console.log(e.response);
+                    Error(e.response.data.message);
+                    setIsEditDisabled(false);
+                  }
+                }}
+              >
+                Görevi Sil
               </Button>
             </Box>
           </Modal>
@@ -424,7 +498,11 @@ const SingleTaskPage = () => {
               </Typography>
               <Box display="flex" gap={1}>
                 {User?.role === roles.Student && (
-                  <Button variant="outlined" onClick={handleOpenAskTask}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleOpenAskTask}
+                    disabled={isCompleted}
+                  >
                     Soru Sor
                   </Button>
                 )}
@@ -438,11 +516,11 @@ const SingleTaskPage = () => {
                     Görevi sonlandır
                   </Button>
                 ) : null}
-
-                <Button variant="outlined" onClick={handleOpenEditTask}>
-                  Görevi Düzenle
-                </Button>
-
+                {User?.role === roles.Teacher && (
+                  <Button variant="outlined" onClick={handleOpenEditTask}>
+                    Görevi Düzenle
+                  </Button>
+                )}
                 {User?.role === roles.Teacher ||
                 Group?.leaders?.includes(User?._id) ? (
                   <Button variant="outlined" onClick={handleOpenSubAskTask}>
@@ -456,7 +534,7 @@ const SingleTaskPage = () => {
             <Typography variant="h6" mb={1}>
               Yüklemeler
             </Typography>
-            <StyledDropzone />
+            <StyledDropzone isComplete={isCompleted} />
             <Grid container spacing={2} my={1} alignItems={"stretch"}>
               {Task?.uploads?.map((item, index) => {
                 return (

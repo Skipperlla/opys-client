@@ -10,7 +10,7 @@ import {
 } from "@components/index";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { roles } from "@utils/querys";
+import { roles, status } from "@utils/querys";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "@store/index";
 import {
@@ -57,23 +57,29 @@ const SingleSubTaskPage = () => {
     if (Object.getOwnPropertyNames(User)?.length && router.isReady) {
       dispatch(QuestionAction.allQuestionsSubTask(groupCode, subTaskId));
       if (User?.role === roles.Student) {
+        dispatch(StudentGroupAction.singleGroup(groupCode, router));
         dispatch(
-          StudentSubTaskAction.singleSubTask(groupCode, taskId, subTaskId)
+          StudentSubTaskAction.singleSubTask(
+            groupCode,
+            taskId,
+            subTaskId,
+            router
+          )
         );
-        dispatch(StudentGroupAction.singleGroup(groupCode));
       } else {
+        dispatch(TeacherGroupAction.singleGroup(groupCode, router));
         dispatch(
           TeacherSubTaskAction.singleSubTask(
             groupCode,
             taskId,
             subTaskId,
-            studentId
+            studentId,
+            router
           )
         );
-        dispatch(TeacherGroupAction.singleGroup(groupCode));
       }
     }
-  }, [User, router]);
+  }, [User]);
 
   const styleAskTask = {
     display: "flex",
@@ -92,6 +98,12 @@ const SingleSubTaskPage = () => {
   const handleCloseAskTask = () => setOpenAskTask(false);
   const handleOpenAskTask = () => setOpenAskTask(true);
   const [title, setTitle] = useState("");
+  const isComplete = !SubTask
+    ? true
+    : Object.getOwnPropertyNames(SubTask)?.length
+    ? SubTask?.status === status.Completed
+    : true;
+
   return (
     <Box flex={4} p={2}>
       {questionIsLoading && subTaskIsLoading ? (
@@ -133,11 +145,16 @@ const SingleSubTaskPage = () => {
                   Operasyonlar
                 </Typography>
                 <Box display="flex" gap={1}>
-                  <Button variant="outlined" onClick={handleOpenAskTask}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleOpenAskTask}
+                    disabled={isComplete}
+                  >
                     Soru Sor
                   </Button>
                   <Button
                     variant="outlined"
+                    disabled={isComplete}
                     onClick={() => {
                       dispatch(
                         StudentSubTaskAction.endSubTask(
@@ -159,7 +176,7 @@ const SingleSubTaskPage = () => {
             <Typography variant="h6" mb={1}>
               Yüklemeler
             </Typography>
-            <StyledDropzone />
+            <StyledDropzone isComplete={isComplete} />
             <Grid container spacing={2} my={1} alignItems={"stretch"}>
               {SubTask?.uploads?.map((item, index) => {
                 return (
