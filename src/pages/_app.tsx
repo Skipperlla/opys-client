@@ -49,7 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }
       }
     }
-  }, [router]);
+  }, [router, Cookies]);
   return (
     <Provider store={store}>
       <Main>
