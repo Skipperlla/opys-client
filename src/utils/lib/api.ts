@@ -1,8 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Error } from "./messages";
-// const baseURL = "https://opys.herokuapp.com/api/v1";
-const baseURL = "http://localhost:8000/api/v1";
+const baseURL = "https://opys.herokuapp.com/api/v1";
+// const baseURL = "http://localhost:8000/api/v1";
 const token = Cookies.get("token");
 
 const api = axios.create({
