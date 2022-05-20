@@ -12,6 +12,7 @@ import { UserAction } from "@store/actions/index";
 import api from "@utils/lib/api";
 import { Error } from "@utils/lib/messages";
 import * as rdd from "react-device-detect";
+import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isSSR, setIsSSR] = useState<boolean>(true);
@@ -28,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       Error(data.message);
     }
   };
-
+  const router = useRouter();
   useEffect(() => {
     if (Cookies.get("token")) {
       dispatch(UserAction.isLoggedIn());
@@ -48,7 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }
       }
     }
-  }, []);
+  }, [router]);
   return (
     <Provider store={store}>
       <Main>

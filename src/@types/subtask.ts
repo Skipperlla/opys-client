@@ -109,6 +109,18 @@ interface UPLOAD_SUB_TASK_RESET {
   type: SetupType.UPLOAD_SUB_TASK_RESET;
 }
 
+interface END_SUB_TASK_START {
+  type: SetupType.END_SUB_TASK_START;
+}
+interface END_SUB_TASK_SUCCESS {
+  type: SetupType.END_SUB_TASK_SUCCESS;
+  status: number;
+}
+
+interface END_SUB_TASK_RESET {
+  type: SetupType.END_SUB_TASK_RESET;
+}
+
 export type SubTaskAction =
   | GET_SUB_TASK_START
   | GET_SUB_TASK_SUCCESS
@@ -127,6 +139,9 @@ export type SubTaskAction =
   | DELETE_SUB_TASK_RESET
   | UPLOAD_SUB_TASK_START
   | UPLOAD_SUB_TASK_SUCCESS
-  | UPLOAD_SUB_TASK_RESET;
+  | UPLOAD_SUB_TASK_RESET
+  | END_SUB_TASK_START
+  | END_SUB_TASK_SUCCESS
+  | END_SUB_TASK_RESET;
 
 export type SubTaskDispatch = ThunkDispatch<SubTaskState, void, SubTaskAction>;

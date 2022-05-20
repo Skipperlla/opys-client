@@ -31,7 +31,8 @@ import { StudentTaskAction, TeacherTaskAction } from "@store/actions/task";
 import { StudentGroupAction, TeacherGroupAction } from "@store/actions/group";
 import { PostAction } from "@store/actions/index";
 import MaterialModal from "@components/MaterialModal";
-import { IUserProps } from "types/task";
+import { ITask, IUserProps } from "types/task";
+import { getAllTaskLeader } from "@utils/lib/api";
 
 function createData(
   name: string,
@@ -90,6 +91,8 @@ const SingleGroup = () => {
   const handleOpenAddTask = () => setOpenAddTask(true);
   const handleCloseAddTask = () => setOpenAddTask(false);
   //
+  const [allTaskLeader, setAllTaskLeader] = useState([]);
+
   const [addTaskData, setAddTaskData] = useState<IAddTaskDataProps>({
     name: "",
     description: "",
@@ -103,6 +106,9 @@ const SingleGroup = () => {
       if (User?.role === roles.Student) {
         dispatch(StudentTaskAction.allTasks());
         dispatch(StudentGroupAction.singleGroup(groupCode));
+        getAllTaskLeader(groupCode).then((data: any) => {
+          setAllTaskLeader(data.data);
+        });
       } else {
         dispatch(TeacherTaskAction.allTasks());
         dispatch(TeacherGroupAction.singleGroup(groupCode));
@@ -142,6 +148,18 @@ const SingleGroup = () => {
       User?.role === roles.Student
         ? `${item.assigner.name} ${item.assigner.surname}`
         : `${item.assignTo.name} ${item.assignTo.surname}`,
+      item.status,
+      item._id,
+      item.assignTo._id
+    );
+  });
+  const allTaskLeaderRows = allTaskLeader?.map((item: ITask) => {
+    return createData(
+      item.name,
+      item.description,
+      moment(item.deadline).format("L"),
+
+      `${item.assignTo.name} ${item.assignTo.surname}`,
       item.status,
       item._id,
       item.assignTo._id
@@ -340,15 +358,12 @@ const SingleGroup = () => {
             </div>
           </Box>
 
-          <Box mt={2} sx={{ position: "relative", width: "100vw" }}>
+          <Box mt={2}>
             <Typography variant="h6" mb={1}>
               {User?.role === roles.Student ? "Ödevler" : "Atanan Ödevler"}
             </Typography>
             {Tasks?.length ? (
-              <TableContainer
-                component={Paper}
-                sx={{ overflowX: "scroll", width: "100%" }}
-              >
+              <TableContainer component={Paper}>
                 <Table aria-label="simple table">
                   <TableHead>
                     <TableRow>
@@ -361,6 +376,7 @@ const SingleGroup = () => {
                           : "Atanan Kişi"}
                       </TableCell>
                       <TableCell>Durum</TableCell>
+                      <TableCell align="right"></TableCell>
                       <TableCell align="right"></TableCell>
                     </TableRow>
                   </TableHead>
@@ -388,6 +404,7 @@ const SingleGroup = () => {
                             Göreve git
                           </Link>
                         </TableCell>
+                        <TableCell align="right">Görevi Sil</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -403,7 +420,7 @@ const SingleGroup = () => {
               <Typography variant="h6" mb={1}>
                 Atanan Ödevler
               </Typography>
-              {Tasks?.length ? (
+              {allTaskLeader?.length ? (
                 <TableContainer component={Paper}>
                   <Table aria-label="simple table">
                     <TableHead>
@@ -411,17 +428,13 @@ const SingleGroup = () => {
                         <TableCell>Görev Adı</TableCell>
                         <TableCell>Açıklama</TableCell>
                         <TableCell>Bitiş Tarihi</TableCell>
-                        <TableCell>
-                          {User?.role === roles.Student
-                            ? "Atayan Kişi"
-                            : "Atanan Kişi"}
-                        </TableCell>
+                        <TableCell>Atanan Kişi</TableCell>
                         <TableCell>Durum</TableCell>
                         <TableCell align="right"></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {rows.map((row, index) => (
+                      {allTaskLeaderRows.map((row, index) => (
                         <TableRow
                           key={index}
                           sx={{

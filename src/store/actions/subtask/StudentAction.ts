@@ -1,7 +1,7 @@
 import api from "@utils/lib/api";
 import { ISubTask, SubTaskDispatch } from "types/subtask";
 import { SetupType } from "@store/types";
-import { Success, Error } from "@utils/lib/messages";
+import { Success, Error, Warning } from "@utils/lib/messages";
 import { NextRouter } from "next/router";
 const baseURL = "/SubTask/Student";
 
@@ -27,7 +27,7 @@ const singleSubTask =
     } catch (e: any) {
       const { data } = e.response;
 
-      Error(data.message);
+      Warning(data.message);
       dispatch({ type: SetupType.GET_SUB_TASK_RESET });
     }
   };
@@ -92,5 +92,30 @@ const uploadSubTask =
       dispatch({ type: SetupType.UPLOAD_SUB_TASK_RESET });
     }
   };
+const endSubTask =
+  (
+    groupCode: string | string[] | undefined,
+    taskId: string | string[] | undefined,
+    subTaskId: string | string[] | undefined
+  ) =>
+  async (dispatch: SubTaskDispatch) => {
+    dispatch({ type: SetupType.END_SUB_TASK_START });
+    try {
+      const { data, status } = await api.get<{
+        data: ISubTask;
+        message: string;
+      }>(`${baseURL}/End/${groupCode}/${taskId}/${subTaskId}`);
+      dispatch({
+        type: SetupType.END_SUB_TASK_SUCCESS,
+        payload: data.data,
+        status,
+      });
+      dispatch({ type: SetupType.END_SUB_TASK_RESET });
+    } catch (e: any) {
+      const { data } = e.response;
 
-export default { singleSubTask, allSubTasks, uploadSubTask };
+      Error(data.message);
+      dispatch({ type: SetupType.END_SUB_TASK_RESET });
+    }
+  };
+export default { singleSubTask, allSubTasks, uploadSubTask, endSubTask };

@@ -1,6 +1,6 @@
 import { NextRouter } from "next/router";
 import api from "@utils/lib/api";
-import { Error, Success } from "@utils/lib/messages";
+import { Error, Success, Warning } from "@utils/lib/messages";
 import { ITask, TaskDispatch } from "types/task";
 import { SetupType } from "@store/types";
 import { IAddTaskDataProps } from "pages/groups/[groupCode]";
@@ -28,7 +28,7 @@ const singleTask =
     } catch (e: any) {
       const { status, data } = e.response;
 
-      Error(data.message);
+      Warning(data.message);
       dispatch({ type: SetupType.GET_TASK_RESET });
     }
   };
@@ -178,7 +178,8 @@ const endTask =
     groupCode: string | string[] | undefined,
     taskId: string | string[] | undefined,
     studentId: string | string[] | undefined,
-    router: NextRouter
+    router: NextRouter,
+    handleCloseFinishTodo: () => void
   ) =>
   async (dispatch: TaskDispatch) => {
     dispatch({ type: SetupType.END_TASK_START });
@@ -191,6 +192,7 @@ const endTask =
         status,
       });
       Success(data.message);
+      handleCloseFinishTodo();
       router.push("/tasks");
       dispatch({ type: SetupType.END_TASK_RESET });
     } catch (e: any) {

@@ -108,7 +108,8 @@ const MuiAccordion = ({
                   groupCode,
                   taskId,
                   questionId,
-                  content
+                  content,
+                  handleClose
                 )
               );
             }}

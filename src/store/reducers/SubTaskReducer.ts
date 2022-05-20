@@ -172,6 +172,29 @@ const SubTaskReducer = (state = defaultState, action: SubTaskAction) => {
         status: null,
       };
 
+    case SetupType.END_SUB_TASK_START:
+      return {
+        ...state,
+        isLoading: true,
+        error: "",
+        success: "",
+        status: null,
+      };
+    case SetupType.END_SUB_TASK_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        error: "",
+        status: action.status,
+      };
+    case SetupType.END_SUB_TASK_RESET:
+      return {
+        ...state,
+        isLoading: false,
+        error: "",
+        success: "",
+        status: null,
+      };
     default:
       return state;
   }

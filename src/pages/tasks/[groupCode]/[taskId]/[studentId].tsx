@@ -24,7 +24,7 @@ import {
   Progress,
 } from "@components/index";
 import { useEffect, useState } from "react";
-import { roles } from "@utils/querys";
+import { roles, status } from "@utils/querys";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "@store/index";
@@ -182,7 +182,6 @@ const SingleTaskPage = () => {
     boxShadow: 24,
     p: 4,
   };
-
   const rows = SubTasks?.map((item) => {
     return createData(
       item.name,
@@ -196,7 +195,9 @@ const SingleTaskPage = () => {
       item.assignTo._id
     );
   });
-
+  const filterSubTask = SubTasks?.filter((item) => {
+    return item.status === status.Completed;
+  });
   return (
     <Box flex={4} p={2}>
       {groupIsLoading &&
@@ -218,7 +219,12 @@ const SingleTaskPage = () => {
                   onClick={() => {
                     if (User?.role === roles.Student)
                       dispatch(
-                        StudentTaskAction.endTask(groupCode, taskId, router)
+                        StudentTaskAction.endTask(
+                          groupCode,
+                          taskId,
+                          router,
+                          handleCloseFinishTodo
+                        )
                       );
                     else
                       dispatch(
@@ -226,7 +232,8 @@ const SingleTaskPage = () => {
                           groupCode,
                           taskId,
                           studentId,
-                          router
+                          router,
+                          handleCloseFinishTodo
                         )
                       );
                   }}
@@ -351,35 +358,41 @@ const SingleTaskPage = () => {
               </Button>
             </Box>
           </Modal>
+          {Task?.status !== status.Completed && (
+            <Box py={2}>
+              <Typography variant="h6" mb={1}>
+                Operasyonlar
+              </Typography>
+              <Box display="flex" gap={1}>
+                {User?.role === roles.Student && (
+                  <Button variant="outlined" onClick={handleOpenAskTask}>
+                    Soru Sor
+                  </Button>
+                )}
+                {User?.role === roles.Student &&
+                filterSubTask?.length === SubTasks?.length ? (
+                  <Button variant="outlined" onClick={handleOpenFinishTodo}>
+                    Görevi teslim et
+                  </Button>
+                ) : User?.role === roles.Teacher ? (
+                  <Button variant="outlined" onClick={handleOpenFinishTodo}>
+                    Görevi sonlandır
+                  </Button>
+                ) : null}
 
-          <Box py={2}>
-            <Typography variant="h6" mb={1}>
-              Operasyonlar
-            </Typography>
-            <Box display="flex" gap={1}>
-              {User?.role === roles.Student && (
-                <Button variant="outlined" onClick={handleOpenAskTask}>
-                  Soru Sor
+                <Button variant="outlined" onClick={handleOpenEditTask}>
+                  Görevi Düzenle
                 </Button>
-              )}
-              <Button variant="outlined" onClick={handleOpenFinishTodo}>
-                {User?.role === roles.Student
-                  ? "Görevi teslim et"
-                  : "Görevi sonlandır"}
-              </Button>
 
-              <Button variant="outlined" onClick={handleOpenEditTask}>
-                Görevi Düzenle
-              </Button>
-
-              {User?.role === roles.Teacher ||
-              Group?.leaders?.includes(User?._id) ? (
-                <Button variant="outlined" onClick={handleOpenSubAskTask}>
-                  Alt Görev Ekle
-                </Button>
-              ) : null}
+                {User?.role === roles.Teacher ||
+                Group?.leaders?.includes(User?._id) ? (
+                  <Button variant="outlined" onClick={handleOpenSubAskTask}>
+                    Alt Görev Ekle
+                  </Button>
+                ) : null}
+              </Box>
             </Box>
-          </Box>
+          )}
           <Box py={2}>
             <Typography variant="h6" mb={1}>
               Yüklemeler

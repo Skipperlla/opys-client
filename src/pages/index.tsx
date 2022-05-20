@@ -14,7 +14,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import withAuth from "@utils/hooks/withAuth";
-import { roles } from "@utils/querys";
+import { roles, status } from "@utils/querys";
 import moment from "moment";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -71,7 +71,11 @@ const Home = () => {
       assignTo,
     };
   }
-  const rows = Tasks?.map((item: ITask) => {
+  const filterTasks = Tasks.filter((item) => {
+    return item.status !== status.Completed;
+  });
+
+  const rows = filterTasks?.map((item: ITask) => {
     return createData(
       item.name,
       item.description,
@@ -169,7 +173,8 @@ const Home = () => {
                             </TableCell>
                             <TableCell>
                               <Link
-                                href={`/groups/${row.groupCode}/task/${row.taskId}?studentId=${row.assignTo}`}
+                                href={`/tasks/${row.groupCode}/${row.taskId}/${row.assignTo}`}
+                                // href={`/groups/${row.groupCode}/task/${row.taskId}?studentId=${row.assignTo}`}
                               >
                                 Göreve git
                               </Link>

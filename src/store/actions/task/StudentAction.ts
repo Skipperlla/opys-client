@@ -92,7 +92,8 @@ const endTask =
   (
     groupCode: string | string[] | undefined,
     taskId: string | string[] | undefined,
-    router: NextRouter
+    router: NextRouter,
+    handleCloseFinishTodo: () => void
   ) =>
   async (dispatch: TaskDispatch) => {
     dispatch({ type: SetupType.END_TASK_START });
@@ -105,10 +106,10 @@ const endTask =
         status,
       });
       Success(data.message);
+      handleCloseFinishTodo();
       router.push("/tasks");
       dispatch({ type: SetupType.END_TASK_RESET });
     } catch (e: any) {
-      console.log(e);
       const { status, data } = e.response;
 
       Error(data.message);

@@ -139,7 +139,8 @@ const createAnswer =
     groupCode: string | string[] | undefined,
     taskId: string | string[] | undefined,
     questionId: string | string[] | undefined,
-    content: string
+    content: string,
+    handleClose: () => void
   ) =>
   async (dispatch: QuestionDispatch) => {
     dispatch({ type: SetupType.CREATE_ANSWER_START });
@@ -156,6 +157,7 @@ const createAnswer =
         status,
       });
       Success(data.message);
+      handleClose();
       dispatch({ type: SetupType.CREATE_ANSWER_RESET });
     } catch (e: any) {
       const { status, data } = e.response;

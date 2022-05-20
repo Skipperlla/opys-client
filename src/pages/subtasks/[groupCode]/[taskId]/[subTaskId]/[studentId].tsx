@@ -1,13 +1,4 @@
-import {
-  Typography,
-  Button,
-  Box,
-  Grid,
-  TextField,
-  Input,
-  Autocomplete,
-  CircularProgress,
-} from "@mui/material";
+import { Typography, Button, Box, Grid, TextField } from "@mui/material";
 
 import withAuth from "@utils/hooks/withAuth";
 import {
@@ -144,6 +135,20 @@ const SingleSubTaskPage = () => {
                 <Box display="flex" gap={1}>
                   <Button variant="outlined" onClick={handleOpenAskTask}>
                     Soru Sor
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      dispatch(
+                        StudentSubTaskAction.endSubTask(
+                          groupCode,
+                          subTaskId,
+                          subTaskId
+                        )
+                      );
+                    }}
+                  >
+                    Alt Görevi Bitir
                   </Button>
                 </Box>
               </Box>
