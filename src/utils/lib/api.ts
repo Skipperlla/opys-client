@@ -5,7 +5,7 @@ const baseURLProduction = "https://opys.herokuapp.com/api/v1";
 const baseURLDev = "http://localhost:8000/api/v1";
 const token = Cookies.get("token");
 const baseURL =
-  process.env.NODE_ENV === "development" ? baseURLDev : baseURLProduction;
+  process.env.NODE_ENV !== "development" ? baseURLDev : baseURLProduction;
 const api = axios.create({
   baseURL,
   headers: {
