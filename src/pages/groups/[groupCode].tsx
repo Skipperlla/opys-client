@@ -91,7 +91,6 @@ const SingleGroup = () => {
   const handleOpenAddTask = () => setOpenAddTask(true);
   const handleCloseAddTask = () => setOpenAddTask(false);
   //
-  const [allTaskLeader, setAllTaskLeader] = useState([]);
 
   const [addTaskData, setAddTaskData] = useState<IAddTaskDataProps>({
     name: "",
@@ -99,24 +98,29 @@ const SingleGroup = () => {
     deadline: "",
     assignTo: "",
   });
-
+  const [allTaskLeader, setAllTaskLeader] = useState([]);
+  useEffect(() => {
+    if (Object.getOwnPropertyNames(Group)?.length) {
+      if (Group?.leaders?.includes(User?._id)) {
+        getAllTaskLeader(groupCode).then((data: any) => {
+          setAllTaskLeader(data.data);
+        });
+      }
+    }
+  }, [Group]);
   useEffect(() => {
     if (Object.getOwnPropertyNames(User)?.length) {
       dispatch(PostAction.allPosts(groupCode));
       if (User?.role === roles.Student) {
-        dispatch(StudentTaskAction.allTasks());
         dispatch(StudentGroupAction.singleGroup(groupCode));
-        if (Group?.leaders?.includes(User?._id)) {
-          getAllTaskLeader(groupCode).then((data: any) => {
-            setAllTaskLeader(data.data);
-          });
-        }
+        dispatch(StudentTaskAction.allTasks());
       } else {
         dispatch(TeacherTaskAction.allTasks());
         dispatch(TeacherGroupAction.singleGroup(groupCode));
       }
     }
   }, [User]);
+  console.log(allTaskLeader);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "deadline") {
       setAddTaskData({

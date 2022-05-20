@@ -129,7 +129,7 @@ const Home = () => {
                     ? "Ödev Sayısı"
                     : "Atanan Ödev Sayısı"}
                 </Typography>
-                <Typography variant="body1">{Tasks?.length}</Typography>
+                <Typography variant="body1">{filterTasks?.length}</Typography>
               </CardContent>
             </Card>
           </Box>

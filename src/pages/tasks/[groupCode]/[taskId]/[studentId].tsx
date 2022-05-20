@@ -15,7 +15,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import withAuth from "../../../../utils/hooks/withAuth";
+import withAuth from "@utils/hooks/withAuth";
 import {
   StyledDropzone,
   MuiAccordion,
@@ -38,7 +38,8 @@ import { useRouter } from "next/router";
 import { QuestionAction } from "@store/actions";
 import { ITask, IUserProps } from "types/task";
 import Link from "next/link";
-import { getAllTaskLeader } from "@utils/lib/api";
+import api, { getAllTaskLeader } from "@utils/lib/api";
+import { Error, Success } from "@utils/lib/messages";
 // Modal style
 const style = {
   display: "flex",
@@ -217,6 +218,18 @@ const SingleTaskPage = () => {
       item.assignTo._id
     );
   });
+  const [editGroup, setEditGroup] = useState({
+    name: "",
+    description: "",
+    deadline: "",
+  });
+
+  const onChangeEditGroup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditGroup({
+      ...editGroup,
+      [e.target.name]: e.target.value,
+    });
+  };
   return (
     <Box flex={4} p={2}>
       {groupIsLoading &&
@@ -355,30 +368,47 @@ const SingleTaskPage = () => {
               sx={style}
               gap={2}
               component="form"
-              onSubmit={() => {
-                console.log("Submitted");
+              onSubmit={async (e: any) => {
+                e.preventDefault();
+                try {
+                  const { data } = await api.put(
+                    `/Task/Teacher/Update/${groupCode}/${taskId}`,
+                    {
+                      ...editGroup,
+                      deadline: moment(new Date(editGroup.deadline)).format(
+                        "MM-DD-YYYY"
+                      ),
+                    }
+                  );
+                  Success(data.message);
+                  router.reload();
+                } catch (err: any) {
+                  Error(err.response.data.message);
+                }
               }}
             >
               <TextField
                 label="Başlık"
+                value={editGroup.name}
                 required
-                onChange={onChange}
+                onChange={onChangeEditGroup}
                 name="name"
               />
               <TextField
                 multiline
                 label="Açıklama"
+                value={editGroup.description}
                 rows={6}
                 required
-                onChange={onChange}
+                onChange={onChangeEditGroup}
                 name="description"
               />
               <Input
                 type="date"
                 id="date"
                 required
-                // value={addSubtaskData.deadline}
-                onChange={onChange}
+                value={editGroup.deadline}
+                onChange={onChangeEditGroup}
                 name="deadline"
               />
 
@@ -445,7 +475,9 @@ const SingleTaskPage = () => {
           </Box>
           <Box mt={2}>
             <Typography variant="h6" mb={1}>
-              {User?.role === roles.Student ? "Ödevler" : "Atanan Alt Ödevler"}
+              {User?.role === roles.Student
+                ? "Alt Ödevler"
+                : "Atanan Alt Ödevler"}
             </Typography>
             {SubTasks?.length ? (
               <TableContainer component={Paper}>
@@ -494,7 +526,7 @@ const SingleTaskPage = () => {
                 </Table>
               </TableContainer>
             ) : (
-              <div>Henüz göreviniz bulunmamaktadır.</div>
+              <div>Henüz alt göreviniz bulunmamaktadır.</div>
             )}
           </Box>
           {Group?.leaders?.includes(User?._id) && (
@@ -549,9 +581,9 @@ const SingleTaskPage = () => {
               )}
             </Box>
           )}
-          <Box>
+          <Box pb={10}>
             <Typography variant="h6" my={2}>
-              {User?.role === roles.Student ? "Sorular" : "Sorular"}
+              Sorular
             </Typography>
             {Questions?.length ? (
               <Box>
