@@ -263,6 +263,7 @@ const SingleGroup = () => {
       value: item._id,
     };
   });
+  const router = useRouter();
   return (
     <Box flex={4} p={2} pb={10} display={"flex"} flexDirection={"column"}>
       {isLoading && taskIsLoading && postIsLoading ? (
@@ -281,7 +282,8 @@ const SingleGroup = () => {
                     groupCode,
                     addTaskData.assignTo,
                     addTaskData,
-                    handleCloseAddTask
+                    handleCloseAddTask,
+                    router
                   )
                 );
               }}

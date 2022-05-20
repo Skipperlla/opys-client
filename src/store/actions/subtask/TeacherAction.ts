@@ -122,7 +122,8 @@ const createSubTask =
     taskId: string | string[] | undefined,
     studentId: string | string[] | undefined,
     addSubtaskData: IAddSubTaskDataProps,
-    handleCloseSubAskTask: () => void
+    handleCloseSubAskTask: () => void,
+    router: NextRouter
   ) =>
   async (dispatch: SubTaskDispatch) => {
     dispatch({ type: SetupType.CREATE_SUB_TASK_START });
@@ -134,13 +135,14 @@ const createSubTask =
         `${baseURL}/Create/${groupCode}/${taskId}/${studentId}`,
         addSubtaskData
       );
+      Success(data.message);
+      handleCloseSubAskTask();
+      router.reload();
       dispatch({
         type: SetupType.CREATE_SUB_TASK_SUCCESS,
         payload: data.data,
         status,
       });
-      Success(data.message);
-      handleCloseSubAskTask();
       dispatch({ type: SetupType.CREATE_SUB_TASK_RESET });
     } catch (e: any) {
       const { data } = e.response;

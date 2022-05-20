@@ -306,7 +306,8 @@ const SingleTaskPage = () => {
                     taskId,
                     studentId,
                     addSubtaskData,
-                    handleCloseSubAskTask
+                    handleCloseSubAskTask,
+                    router
                   )
                 );
               }}
@@ -334,7 +335,12 @@ const SingleTaskPage = () => {
                 name="deadline"
               />
 
-              <Button sx={{ mt: 2 }} variant="outlined" type="submit">
+              <Button
+                sx={{ mt: 2 }}
+                variant="outlined"
+                type="submit"
+                disabled={subTaskIsLoading}
+              >
                 Alt Görev Ekle
               </Button>
             </Box>

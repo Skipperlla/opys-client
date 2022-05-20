@@ -109,7 +109,8 @@ const createTask =
     groupCode: string | string[] | undefined,
     studentId: string | string[] | undefined,
     form: IAddTaskDataProps,
-    handleCloseAddTask: () => void
+    handleCloseAddTask: () => void,
+    router: NextRouter
   ) =>
   async (dispatch: TaskDispatch) => {
     dispatch({ type: SetupType.CREATE_TASK_START });
@@ -118,13 +119,15 @@ const createTask =
         `${baseURL}/Create/${groupCode}/${studentId}`,
         form
       );
+      Success(data.message);
+      handleCloseAddTask();
+      router.reload();
       dispatch({
         type: SetupType.CREATE_TASK_SUCCESS,
         payload: data.data,
         status,
       });
-      Success(data.message);
-      handleCloseAddTask();
+
       dispatch({ type: SetupType.CREATE_TASK_RESET });
     } catch (e: any) {
       const { status, data } = e.response;
