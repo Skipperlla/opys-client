@@ -284,9 +284,11 @@ const SingleTaskPage = () => {
         <>
           <Box sx={{ width: "100%" }}>
             <LinearProgressWithLabel
-              value={Math.ceil(
-                (100 / SubTasks?.length) * filterSubTask?.length
-              )}
+              value={
+                SubTasks?.length
+                  ? Math.ceil((100 / SubTasks?.length) * filterSubTask?.length)
+                  : 0
+              }
             />
           </Box>
           <Modal isOpen={openFinishTodo} onClose={handleCloseFinishTodo}>
