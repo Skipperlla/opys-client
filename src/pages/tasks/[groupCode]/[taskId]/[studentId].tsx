@@ -124,6 +124,10 @@ const SingleTaskPage = () => {
   const handleOpenSubAskTask = () => setSubOpenAskTask(true);
   const handleCloseSubAskTask = () => setSubOpenAskTask(false);
 
+  const [openEditTask, setOpenEditTask] = useState(false);
+  const handleOpenEditTask = () => setOpenEditTask(true);
+  const handleCloseEditTask = () => setOpenEditTask(false);
+
   const [openFinishTodo, setOpenFinishTodo] = useState(false);
   const handleOpenFinishTodo = () => setOpenFinishTodo(true);
   const handleCloseFinishTodo = () => setOpenFinishTodo(false);
@@ -263,7 +267,6 @@ const SingleTaskPage = () => {
               </Button>
             </Box>
           </Modal>
-
           <Modal isOpen={openSubAskTask} onClose={handleCloseSubAskTask}>
             <Box
               sx={style}
@@ -311,6 +314,44 @@ const SingleTaskPage = () => {
             </Box>
           </Modal>
 
+          <Modal isOpen={openEditTask} onClose={handleCloseEditTask}>
+            <Box
+              sx={style}
+              gap={2}
+              component="form"
+              onSubmit={() => {
+                console.log("Submitted");
+              }}
+            >
+              <TextField
+                label="Başlık"
+                required
+                onChange={onChange}
+                name="name"
+              />
+              <TextField
+                multiline
+                label="Açıklama"
+                rows={6}
+                required
+                onChange={onChange}
+                name="description"
+              />
+              <Input
+                type="date"
+                id="date"
+                required
+                // value={addSubtaskData.deadline}
+                onChange={onChange}
+                name="deadline"
+              />
+
+              <Button sx={{ mt: 2 }} variant="outlined" type="submit">
+                Güncelle
+              </Button>
+            </Box>
+          </Modal>
+
           <Box py={2}>
             <Typography variant="h6" mb={1}>
               Operasyonlar
@@ -325,6 +366,10 @@ const SingleTaskPage = () => {
                 {User?.role === roles.Student
                   ? "Görevi teslim et"
                   : "Görevi sonlandır"}
+              </Button>
+
+              <Button variant="outlined" onClick={handleOpenEditTask}>
+                Görevi Düzenle
               </Button>
 
               {User?.role === roles.Teacher ||
@@ -410,22 +455,27 @@ const SingleTaskPage = () => {
               <div>Henüz göreviniz bulunmamaktadır.</div>
             )}
           </Box>
-          {Questions?.length ? (
-            <Box>
-              {Questions?.map((item, index) => {
-                return (
-                  <MuiAccordion
-                    key={index}
-                    questionId={item._id}
-                    title={item.title}
-                    description={item.content}
-                  />
-                );
-              })}
-            </Box>
-          ) : (
-            <div>Herhangi bir soru veya cevap bulunamadı</div>
-          )}
+          <Box>
+            <Typography variant="h6" my={2}>
+              {User?.role === roles.Student ? "Sorular" : "Sorular"}
+            </Typography>
+            {Questions?.length ? (
+              <Box>
+                {Questions?.map((item, index) => {
+                  return (
+                    <MuiAccordion
+                      key={index}
+                      questionId={item._id}
+                      title={item.title}
+                      description={item.content}
+                    />
+                  );
+                })}
+              </Box>
+            ) : (
+              <div>Herhangi bir soru veya cevap bulunamadı</div>
+            )}
+          </Box>
         </>
       )}
     </Box>

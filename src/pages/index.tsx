@@ -178,7 +178,7 @@ const Home = () => {
                         ))}
                       </>
                     ) : (
-                      <div>daha eklenen bir gönderi bulunamadı</div>
+                      <Box p={2}>Henüz bir görev eklenmedi.</Box>
                     )}
                   </TableBody>
                 </Table>

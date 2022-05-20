@@ -3,6 +3,7 @@ import { ThunkDispatch } from "redux-thunk";
 import { SetupType } from "@store/types";
 
 export interface IPost {
+  createdAt: string;
   content: string;
   author: IUserProps;
 }

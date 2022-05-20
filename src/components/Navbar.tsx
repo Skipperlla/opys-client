@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "@store/index";
 import { UserAction } from "@store/actions/index";
+import Image from "next/image";
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
   justifyContent: "space-between",
@@ -39,9 +40,13 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ bgcolor: "#131d45" }}>
       <StyledToolbar>
-        <Typography>Öğrenci Yönetim Paneli</Typography>
+        <Image
+          src="https://saps.fra1.digitaloceanspaces.com/opsy.jpeg"
+          width={75}
+          height={75}
+        />
         <Box
           sx={{ display: "flex", alignItems: "center", textAlign: "center" }}
         >

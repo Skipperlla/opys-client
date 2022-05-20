@@ -147,7 +147,6 @@ const SingleGroup = () => {
       item.assignTo._id
     );
   });
-  console.log(Tasks);
   const userColumns = [
     { field: "id", headerName: "ID", width: 90 },
     {
@@ -341,12 +340,15 @@ const SingleGroup = () => {
             </div>
           </Box>
 
-          <Box mt={2}>
+          <Box mt={2} sx={{ position: "relative", width: "100vw" }}>
             <Typography variant="h6" mb={1}>
               {User?.role === roles.Student ? "Ödevler" : "Atanan Ödevler"}
             </Typography>
             {Tasks?.length ? (
-              <TableContainer component={Paper}>
+              <TableContainer
+                component={Paper}
+                sx={{ overflowX: "scroll", width: "100%" }}
+              >
                 <Table aria-label="simple table">
                   <TableHead>
                     <TableRow>
@@ -504,6 +506,7 @@ const SingleGroup = () => {
                         role={item.author.role}
                         fullName={item.author.name + " " + item.author.surname}
                         content={item.content}
+                        date={item.createdAt}
                       />
                     </Grid>
                   );

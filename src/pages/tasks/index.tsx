@@ -73,11 +73,19 @@ const TasksPage = () => {
     );
   });
   return (
-    <Box flex={4} p={2} pb={10} display={"flex"} flexDirection={"column"}>
+    <Box
+      flex={4}
+      p={2}
+      pb={10}
+      display={"flex"}
+      flexDirection={"column"}
+      position="relative"
+      width={"100vw"}
+    >
       {isLoading ? (
         <Progress />
       ) : (
-        <Box mt={2}>
+        <Box mt={2} sx={{ overflowX: "scroll" }} width={"100%"}>
           <Typography variant="h6" mb={1}>
             {User?.role === roles.Student
               ? "Görevler"
