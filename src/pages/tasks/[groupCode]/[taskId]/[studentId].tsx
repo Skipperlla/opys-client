@@ -229,7 +229,9 @@ const SingleTaskPage = () => {
           <Modal isOpen={openFinishTodo} onClose={handleCloseFinishTodo}>
             <Box sx={styleFinishTodo} gap={2}>
               <Typography id="modal-modal-title" component="h2">
-                Görevi teslim etmek istediğinizden emin misiniz?
+                {User?.role === roles.Student
+                  ? "Görevi teslim etmek istediğinizden emin misiniz?"
+                  : "Görevi sonlandırmak istediğinizden emin misiniz?"}
               </Typography>
               <Box display={"flex"} justifyContent="center" gap={2}>
                 <Button
@@ -258,11 +260,13 @@ const SingleTaskPage = () => {
                   }}
                 >
                   {User?.role === roles.Student
-                    ? " Evet, teslim et"
-                    : "Görevi sonlandır"}
+                    ? "Evet, teslim et"
+                    : "Evet, sonlandır"}
                 </Button>
                 <Button variant="outlined" onClick={handleCloseFinishTodo}>
-                  Hayır, teslim etme
+                  {User?.role === roles.Student
+                    ? "Hayır, teslim etme"
+                    : "Hayır, sonlandırma"}
                 </Button>
               </Box>
             </Box>
