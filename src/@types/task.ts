@@ -24,6 +24,7 @@ export interface ITask {
   status: string;
   _id: string;
   uploads: IUploadProps[];
+  subTasks: string[];
 }
 export interface TaskState {
   Task: ITask;

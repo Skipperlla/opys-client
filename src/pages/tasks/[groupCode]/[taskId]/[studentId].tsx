@@ -285,7 +285,7 @@ const SingleTaskPage = () => {
         <Progress />
       ) : (
         <>
-          <Box sx={{ width: "100%" }}>
+          {/* <Box sx={{ width: "100%" }}>
             <LinearProgressWithLabel
               value={
                 SubTasks?.length
@@ -293,7 +293,7 @@ const SingleTaskPage = () => {
                   : 0
               }
             />
-          </Box>
+          </Box> */}
           <Modal isOpen={openFinishTodo} onClose={handleCloseFinishTodo}>
             <Box sx={styleFinishTodo} gap={2}>
               <Typography id="modal-modal-title" component="h2">

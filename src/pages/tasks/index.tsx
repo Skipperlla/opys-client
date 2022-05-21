@@ -9,8 +9,25 @@ import {
   Paper,
   Box,
   CircularProgress,
+  LinearProgress,
+  LinearProgressProps,
 } from "@mui/material";
-
+function LinearProgressWithLabel(
+  props: LinearProgressProps & { value: number }
+) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box sx={{ width: "100%", mr: 1 }}>
+        <LinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">{`${Math.round(
+          props.value
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
 import Link from "next/link";
 import withAuth from "@utils/hooks/withAuth";
 import { roles, status } from "@utils/querys";
@@ -45,7 +62,8 @@ const TasksPage = () => {
     taskStatus: string,
     taskId: string,
     groupCode: string,
-    assignTo: any
+    assignTo: any,
+    subTasksLength: number
   ) {
     return {
       name,
@@ -56,9 +74,13 @@ const TasksPage = () => {
       taskId,
       groupCode,
       assignTo,
+      subTasksLength,
     };
   }
   const rows = Tasks?.map((item) => {
+    const subTasksCompletedLength = item.subTasks?.filter((item: any) => {
+      return item.status === status.Completed;
+    })?.length;
     return createData(
       item.name,
       item.description,
@@ -69,7 +91,10 @@ const TasksPage = () => {
       item.status,
       item._id,
       item.group.groupCode,
-      item.assignTo._id
+      item.assignTo._id,
+      item.subTasks.length
+        ? Math.ceil((100 / item.subTasks.length) * subTasksCompletedLength)
+        : 0
     );
   });
   return (
@@ -106,6 +131,7 @@ const TasksPage = () => {
                     </TableCell>
                     <TableCell>Durum</TableCell>
                     <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -125,6 +151,13 @@ const TasksPage = () => {
                           <TableCell>{row.deadline}</TableCell>
                           <TableCell>{row.fullName}</TableCell>
                           <TableCell>{row.taskStatus}</TableCell>
+                          <TableCell>
+                            <Box sx={{ width: "100%" }}>
+                              <LinearProgressWithLabel
+                                value={row.subTasksLength}
+                              />
+                            </Box>
+                          </TableCell>
                           <TableCell>
                             <Link
                               href={`/tasks/${row.groupCode}/${row.taskId}/${row.assignTo}`}
