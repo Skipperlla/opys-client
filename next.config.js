@@ -5,10 +5,7 @@ const nextConfig = {
       "BKW4d3HuSrxPkORbqrPtVfJH6MLXsXZvUproxKUd61knDsTrJ1EW9eZHVdIJffDvGS0-OAVkBjOKBYzd3xUJdqM",
   },
   images: {
-    domains: [
-      "fra1.digitaloceanspaces.com",
-      "saps.fra1.digitaloceanspaces.com",
-    ],
+    domains: ["opys.fra1.digitaloceanspaces.com"],
   },
 };
 

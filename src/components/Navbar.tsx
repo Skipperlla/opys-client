@@ -44,7 +44,7 @@ const Navbar = () => {
     <AppBar position="static" sx={{ bgcolor: "#131d45" }}>
       <StyledToolbar>
         <Image
-          src="https://saps.fra1.digitaloceanspaces.com/opsy.jpeg"
+          src="https://opys.fra1.digitaloceanspaces.com/opyslogo.jpg"
           width={75}
           height={75}
         />

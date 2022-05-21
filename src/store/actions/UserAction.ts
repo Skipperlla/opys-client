@@ -18,8 +18,13 @@ const isLoggedIn = () => async (dispatch: UserDispatch) => {
     dispatch({ type: SetupType.IS_LOGGED_IN_RESET });
   } catch (e: any) {
     const { status, data } = e.response;
-
-    Error(data.message);
+    if (status === 404) {
+      Cookies.remove("token");
+      window.location.replace("/auth/signin");
+      Error(data.message);
+    } else {
+      Error(data.message);
+    }
     dispatch({ type: SetupType.IS_LOGGED_IN_RESET });
   }
 };

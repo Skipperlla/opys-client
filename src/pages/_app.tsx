@@ -61,7 +61,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   });
   useEffect(() => {
     if (User?.role === roles.Admin) router.push("/createuser");
-    else router.push("/");
   }, [User]);
 
   return (

@@ -106,8 +106,8 @@ const Home = () => {
           >
             <Card sx={{ width: { xs: "100%", md: 1 / 2 } }}>
               <CardMedia
-                image="https://mui.com/static/images/cards/contemplative-reptile.jpg"
-                height="140"
+                image="https://opys.fra1.digitaloceanspaces.com/unknown.jpg"
+                height="175"
                 component="img"
                 alt="green iguana"
               />
@@ -118,8 +118,8 @@ const Home = () => {
             </Card>
             <Card sx={{ width: { xs: "100%", md: 1 / 2 } }}>
               <CardMedia
-                image="https://mui.com/static/images/cards/contemplative-reptile.jpg"
-                height="140"
+                image="https://opys.fra1.digitaloceanspaces.com/unknown.jpg"
+                height="175"
                 component="img"
                 alt="green iguana"
               />
