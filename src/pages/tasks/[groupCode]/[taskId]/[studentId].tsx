@@ -12,7 +12,6 @@ import {
   TableCell,
   TableBody,
   Paper,
-  CircularProgress,
 } from "@mui/material";
 import DatePicker from "react-datepicker";
 
@@ -81,7 +80,7 @@ const style = {
 export interface IAddSubTaskDataProps {
   name: string;
   description: string;
-  deadline: string;
+  deadline: Date;
 }
 function createData(
   name: string,
@@ -168,10 +167,10 @@ const SingleTaskPage = () => {
   const onChangeQuestion = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
-  const [addSubtaskData, setAddSubtaskData] = useState<IAddSubTaskDataProps>({
+  const [addSubtaskData, setAddSubtaskData] = useState<any>({
     name: "",
     description: "",
-    deadline: "",
+    deadline: new Date(),
   });
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -399,13 +398,17 @@ const SingleTaskPage = () => {
                 onChange={onChange}
                 name="description"
               />
-              <Input
-                type="date"
-                id="date"
-                required
-                // value={addSubtaskData.deadline}
-                onChange={onChange}
-                name="deadline"
+              <DatePicker
+                selected={startDate}
+                value={editGroup.deadline}
+                minDate={new Date()}
+                onChange={(date: any) => {
+                  setStartDate(date);
+                  setAddSubtaskData({
+                    ...addSubtaskData,
+                    deadline: moment(new Date(date)).format("MM-DD-YYYY"),
+                  });
+                }}
               />
 
               <Button
