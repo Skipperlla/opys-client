@@ -13,7 +13,10 @@ export interface AuthState {
 interface LOGIN_START {
   type: SetupType.LOGIN_START;
 }
+interface LOGIN_RESET {
+  type: SetupType.LOGIN_RESET;
+}
 
-export type AuthAction = LOGIN_START;
+export type AuthAction = LOGIN_START | LOGIN_RESET;
 
 export type AuthDispatch = ThunkDispatch<AuthState, void, AuthAction>;

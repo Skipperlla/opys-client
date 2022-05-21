@@ -3,7 +3,7 @@ import "@assets/styles/globals.css";
 import type { AppProps } from "next/app";
 import { useEffect, useState } from "react";
 import store from "@store/store";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { createWrapper } from "next-redux-wrapper";
 import ToasterContainer from "@components/ToasterContainer";
 import Main from "Layouts/Main";
@@ -14,6 +14,8 @@ import { Error } from "@utils/lib/messages";
 import * as rdd from "react-device-detect";
 import { useRouter } from "next/router";
 import "react-datepicker/dist/react-datepicker.css";
+import { AppState } from "@store/index";
+import { roles } from "@utils/querys";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isSSR, setIsSSR] = useState<boolean>(true);
@@ -54,6 +56,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       dispatch(UserAction.isLoggedIn());
     }
   }, []);
+  const { User } = useSelector((state: AppState) => {
+    return state.user;
+  });
+  useEffect(() => {
+    if (User?.role === roles.Admin) router.push("/createuser");
+    else router.push("/");
+  }, [User]);
 
   return (
     <Provider store={store}>

@@ -37,8 +37,10 @@ import { AppState } from "@store/index";
 import { useEffect } from "react";
 import { StudentTaskAction, TeacherTaskAction } from "@store/actions/task";
 import { Progress } from "@components/index";
+import { useRouter } from "next/router";
 const TasksPage = () => {
   const dispatch = useDispatch<any>();
+  const router = useRouter();
   const { User } = useSelector((state: AppState) => {
     return state.user;
   });
@@ -54,6 +56,7 @@ const TasksPage = () => {
       }
     }
   }, [User]);
+
   function createData(
     name: string,
     description: string,

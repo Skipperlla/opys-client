@@ -13,7 +13,9 @@ const defaultState: AuthState = {
 const AuthReducer = (state = defaultState, action: AuthAction) => {
   switch (action.type) {
     case SetupType.LOGIN_START:
-      return { ...state, loading: true, error: "", success: "" };
+      return { ...state, isLoading: true, error: "", success: "" };
+    case SetupType.LOGIN_RESET:
+      return { ...state, isLoading: false, error: "", success: "" };
 
     default:
       return state;
